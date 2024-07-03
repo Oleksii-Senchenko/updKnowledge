@@ -1,4 +1,4 @@
-const { Schema, model } = require("monguse");
+const { Schema, model } = require("mongoose");
 
 const appartamentsSchema = new Schema({
   name: {
