@@ -5,7 +5,7 @@ const User = require("../models/user");
 const { SECRET_KEY } = process.env;
 const jwt = require("jsonwebtoken");
 
-const regiter = tryCatch(async (req, res) => {
+const register = tryCatch(async (req, res) => {
   const { name, email, password } = req.body;
 
   const chekEmail = await User.findOne({ email });
@@ -27,11 +27,40 @@ const regiter = tryCatch(async (req, res) => {
   if (!result) {
     throw HttpError(500, "Somethink went wrong...");
   }
-  res.json({
+  res
+    .json({
       name: newUser.name,
       email: newUser.email,
       token: token,
-    }).status(201);
+    })
+    .status(201);
 });
 
-module.exports = regiter;
+const login = tryCatch(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(401, "Email or password is wrong");
+  }
+
+  const comparePass = await bcrypt.compare(password, user.password);
+  if (!comparePass) {
+    throw HttpError(401, "Email or password is wrong");
+  }
+
+  const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "12h" });
+
+  const result = await User.findOneAndUpdate(user._id, {token})
+  if (!result) {
+    throw HttpError(500, "Somethink went wrong...");
+  }
+
+  res.status(201).json({
+    email: email,
+    name: user.name,
+    token: token,
+  });
+});
+
+module.exports = {register, login};
