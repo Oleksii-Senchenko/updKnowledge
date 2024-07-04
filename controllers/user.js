@@ -17,17 +17,21 @@ const regiter = tryCatch(async (req, res) => {
 
   const newUser = await User.create({ ...req.body, password: hashPass });
 
-  const token =  jwt.sign({id:newUser._id},  SECRET_KEY , { expiresIn: "12h" });
+  const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: "12h" });
 
-  await User.findByIdAndUpdate(newUser._id, { token }, { new: true });
-
-  res
-    .json({
+  const result = await User.findByIdAndUpdate(
+    newUser._id,
+    { token },
+    { new: true }
+  );
+  if (!result) {
+    throw HttpError(500, "Somethink went wrong...");
+  }
+  res.json({
       name: newUser.name,
       email: newUser.email,
       token: token,
-    })
-    .status(201);
+    }).status(201);
 });
 
 module.exports = regiter;
