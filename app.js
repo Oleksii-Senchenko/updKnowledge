@@ -7,6 +7,7 @@ const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 const appartItemsRouter = require("./routes/api/appartItem");
+const authUser = require("./routes/api/user");
 
 app.use(logger(formatsLogger));
 app.use(cors());
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/booking", appartItemsRouter);
+app.use("/api/auth", authUser)
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
