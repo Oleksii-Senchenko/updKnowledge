@@ -6,7 +6,10 @@ const { SECRET_KEY } = process.env;
 const jwt = require("jsonwebtoken");
 
 const register = tryCatch(async (req, res) => {
-  const { name, email, password } = req.body;
+
+
+
+  const { email, password } = req.body;
 
   const chekEmail = await User.findOne({ email });
   if (chekEmail) {
