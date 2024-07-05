@@ -51,7 +51,7 @@ const login = tryCatch(async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "12h" });
 
-  const result = await User.findOneAndUpdate(user._id, {token})
+  const result = await User.findOneAndUpdate(user._id, { token });
   if (!result) {
     throw HttpError(500, "Somethink went wrong...");
   }
@@ -63,4 +63,10 @@ const login = tryCatch(async (req, res) => {
   });
 });
 
-module.exports = {register, login};
+const logout = tryCatch(async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: null });
+  res.status(204).json();
+});
+
+module.exports = { register, login, logout };
