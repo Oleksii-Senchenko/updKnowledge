@@ -13,16 +13,15 @@ const getAllApparts = tryCatch(async (req, res) => {
 });
 
 const addAppart = tryCatch(async (req, res) => {
+  const { _id: owner } = req.user;
+  
   const { error } = addSchemaJoiApparts.validate(req.body);
   if (error) {
     throw HttpError(400, error.message);
   }
 
-  const dublicationChek = await Apparts.findOne({ name: req.body.name });
-  if (dublicationChek) {
-    return res.status(400).json({ error: "Item has been upload" });
-  }
-  const newAppart = await Apparts.create(req.body);
+
+  const newAppart = await Apparts.create({...req.body, owner});
   if (!newAppart) {
     throw HttpError(500, "Somethink went wrong. Please try later :(");
   }
@@ -68,15 +67,21 @@ const getOneAppart = tryCatch(async (req, res) => {
   res.json(result).status(200);
 });
 
-const deleteOneAppart = tryCatch(async(req, res)=>{
-    const { id } = req.params;
+const deleteOneAppart = tryCatch(async (req, res) => {
+  const { id } = req.params;
 
-    const result = await Apparts.findByIdAndDelete({_id: id})
-    
-    if (!result) {
-        throw HttpError(500, 'Somethink went wrong :(' )
-    }
+  const result = await Apparts.findByIdAndDelete({ _id: id });
 
-    res.json(200, "Succsess deleted :)")
-})
-module.exports = { getAllApparts, addAppart, searchByParams, getOneAppart, deleteOneAppart };
+  if (!result) {
+    throw HttpError(500, "Somethink went wrong :(");
+  }
+
+  res.json(200, "Succsess deleted :)");
+});
+module.exports = {
+  getAllApparts,
+  addAppart,
+  searchByParams,
+  getOneAppart,
+  deleteOneAppart,
+};

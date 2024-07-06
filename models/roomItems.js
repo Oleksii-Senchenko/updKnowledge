@@ -3,21 +3,26 @@ const { Schema, model } = require("mongoose");
 const appartamentsSchema = new Schema({
   location: {
     type: String,
-    require: [true, "Please fill the input"],
+    required: [true, "Please fill the input"],
   },
   name: {
     type: String,
-    require: [true, "Please fill the input"],
+    required: [true, "Please fill the input"],
   },
   description: {
     type: String,
-    require: [true, "Please fill the input"],
+    required: [true, "Please fill the input"],
   },
   price: {
     type: Number,
-    require: [true, "Please fill the input"],
+    required: [true, "Please fill the input"],
   },
-  hasBalcony: Boolean,
+  hasBalcony: { type: Boolean },
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
 });
 appartamentsSchema.index({ "$**": "text" });
 const Apparts = model("Apparts", appartamentsSchema);

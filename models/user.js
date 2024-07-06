@@ -18,6 +18,7 @@ const userSchema = new Schema({
   token: {
     type: String,
   },
+  
 });
 
 const User = model("User", userSchema);
